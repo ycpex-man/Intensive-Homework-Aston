@@ -1,8 +1,5 @@
 package hashmap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MyHashMap<K, V> {
     private static final int INIT_CAPACITY = 16;
     private Node<K, V>[] table;
@@ -13,19 +10,15 @@ public class MyHashMap<K, V> {
     }
 
     public void put(K key, V value) {
-        // Если массив заполнен, увеличиваем его размер
         if (size == table.length)
             resize();
         Node<K, V> newNode = new Node<>(key, value);
-        int index = key.hashCode() & (table.length - 1); // Вычисляем индекс
-        // Если индекс пустой, добавляем новый узел
+        int index = key.hashCode() & (table.length - 1);
         if (table[index] == null) {
             table[index] = newNode;
             size++;
-        // Если ключ уже существует, обновляем значение
         } else if (table[index].key.equals(newNode.key)) {
             table[index].value = newNode.value;
-        // Если есть коллизия, добавляем узел в конец списка
         } else {
             Node<K, V> currentNode = table[index];
             while (currentNode.next != null) {
@@ -39,10 +32,9 @@ public class MyHashMap<K, V> {
     public V get(K key) {
         int index = key.hashCode() & (table.length - 1);
         Node<K, V> currentNode = table[index];
-        // Перебираем список
         while (currentNode != null) {
             if (currentNode.key.equals(key)) {
-                return currentNode.value; // Возвращаем значение, если нашли подходящий ключ
+                return currentNode.value;
             }
             currentNode = currentNode.next;
         }
@@ -51,16 +43,15 @@ public class MyHashMap<K, V> {
 
     public Node<K, V> remove(K key) {
         int index = key.hashCode() & (table.length - 1);
-        Node<K, V> deleteNode = null; // Для удалённого узла
-        Node<K, V> prevNode = null; // Для предыдущего узла
-        Node<K, V> currentNode = table[index]; // Для текущего узла
-        // Перебираем список
+        Node<K, V> deleteNode = null;
+        Node<K, V> prevNode = null;
+        Node<K, V> currentNode = table[index];
         while (currentNode != null) {
             if (currentNode.key.equals(key)) {
-                if (prevNode == null){
-                    table[index] = currentNode.next; // Удаляем, если первый в списке
+                if (prevNode == null) {
+                    table[index] = currentNode.next;
                 } else {
-                    prevNode.next = currentNode.next; // Если в середине списка
+                    prevNode.next = currentNode.next;
                 }
                 size--;
                 deleteNode = currentNode;
@@ -71,11 +62,9 @@ public class MyHashMap<K, V> {
         return deleteNode;
     }
 
-
     private void resize() {
         int newCapacity = table.length * 2;
         Node<K, V>[] newTable = new Node[newCapacity];
-        // Перебираем массив table и для каждого узла находим новый индекс, для нового массива newTable
         for (Node<K, V> node : table) {
             while (node != null) {
                 int index = node.hash & (newCapacity - 1);
@@ -86,18 +75,6 @@ public class MyHashMap<K, V> {
             }
         }
         table = newTable;
-    }
-
-    // Чисто для отладки
-    public List<Node<K, V>> entrySet() {
-        List<Node<K, V>> entries = new ArrayList<>();
-        for (Node<K, V> node : table) {
-            while (node != null) {
-                entries.add(node);
-                node = node.next;
-            }
-        }
-        return entries;
     }
 
     public class Node<K, V> {
